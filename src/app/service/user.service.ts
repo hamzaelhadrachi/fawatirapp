@@ -7,7 +7,7 @@ import { CustomHttpResponse, Profile } from '../interface/appstates';
   providedIn: 'root',
 })
 export class UserService {
-  private readonly server: string = '';
+  private readonly server: string = 'http://localhost:8080';
 
   constructor(private http: HttpClient) {}
 
@@ -33,4 +33,13 @@ export class UserService {
     }
     return throwError(() => errorMessage);
   }
+
+  verifyCode$ = (email: string, code: string) =>
+    <Observable<CustomHttpResponse<Profile>>>(
+      this.http
+        .get<
+          CustomHttpResponse<Profile>
+        >(`${this.server}/user/verify/code/${email}/${code}`)
+        .pipe(tap(console.log), catchError(this.handleError))
+    );
 }
