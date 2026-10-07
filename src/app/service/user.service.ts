@@ -42,4 +42,13 @@ export class UserService {
         >(`${this.server}/user/verify/code/${email}/${code}`)
         .pipe(tap(console.log), catchError(this.handleError))
     );
+
+  profile$ = () =>
+    <Observable<CustomHttpResponse<Profile>>>(
+      this.http
+        .get<
+          CustomHttpResponse<Profile>
+        >(`${this.server}/user/profile`)
+        .pipe(tap(console.log), catchError(this.handleError))
+    );
 }
