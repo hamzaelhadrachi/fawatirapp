@@ -1,5 +1,5 @@
 <section *ngIf="(loginState$ | async) as state" [ngSwitch]="state.dataState" ]>
-    <div *ngIf="!state.loginSuccess && !state.isUsingMfa" class="container">
+    <div *ngIf="!state.loginSuccess && !state.usingMfa" class="container">
       <div class="row justify-content-center my-5">
         <div class="col-md-6" style="margin-top: 50px;">
           <div class="card">
@@ -46,7 +46,7 @@
     </div>
 
     <!-- Success screen -->
-    <div *ngIf="state.isUsingMfa" class="container">
+    <div *ngIf="state.usingMfa" class="container">
       <!-- <div class="container"> -->
       <div class="row justify-content-center my-5">
         <div class="col-md-6" style="margin-top: 50px;">
@@ -65,7 +65,7 @@
               <form #verifyCodeForm="ngForm" (ngSubmit)="verifyCode(verifyCodeForm)">
                 <div class="form-outline mb-4">
                   <label class="form-label" for="code">Verirfication Code</label>
-                  <input [disabled]="state.dataState === DataState.LOADING" type="text" name="code" class="form-control" required>
+                  <input [disabled]="state.dataState === DataState.LOADING" ngModel type="text" name="code" class="form-control" required>
                 </div>
                 <div class="d-flex justify-content-center mb-4">
                   <button [disabled]="state.dataState === DataState.LOADING || verifyCodeForm.invalid || verifyCodeForm.pristine" type="submit" class="btn btn-primary">

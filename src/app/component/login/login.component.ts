@@ -13,7 +13,9 @@ import {Key} from "../../enum/key.enum";
 })
 export class LoginComponent {
   constructor(private router: Router, private userService: UserService) {}
+
   loginState$: Observable<any> = of({dataState: DataState.LOADED});
+
   private phoneSubject = new BehaviorSubject<string | null>(null) ;
   private emailSubject = new BehaviorSubject<string | null>(null) ;
   readonly dataState = DataState;
@@ -23,10 +25,10 @@ export class LoginComponent {
     this.loginState$ = this.userService.login$(loginForm.value.email, loginForm.value.password)
       .pipe(
         map(response => {
-          if (response.data.user.isUsingMfa){
+          if (response.data.user.usingMfa){
             this.phoneSubject.next(response.data.user.phone);
             this.emailSubject.next(response.data.user.email);
-            return {dataState: DataState.LOADED, loginSuccess: false, isUsingMfa: true,
+            return {dataState: DataState.LOADED, loginSuccess: false, usingMfa: true,
               phone: response.data.user.phone.substring(response.data.user.phone.length - 4) };
           }else{
             localStorage.setItem(Key.TOKEN, response.data.access_token);
@@ -35,16 +37,16 @@ export class LoginComponent {
             return {dataState: DataState.LOADED, loginSuccess: true};
           }
         }),
-        startWith({dataState: DataState.LOADING, isUsingMfa: false}),
+        startWith({dataState: DataState.LOADING, usingMfa: false}),
         catchError((error: string) => {
-          return of({dataState: DataState.ERROR, isUsingMfa: false, loginSuccess: false, error})
+          return of({dataState: DataState.ERROR, usingMfa: false, loginSuccess: false, error})
         })
       )
   }
 
   protected readonly DataState = DataState;
 
-  protected verifyCode(verifyCodeForm: NgForm) {
+  verifyCode(verifyCodeForm: NgForm) {
     this.loginState$ = this.userService.verifyCode$(this.emailSubject.value, verifyCodeForm.value.code)
       .pipe(
         map(response => {
@@ -53,9 +55,11 @@ export class LoginComponent {
           this.router.navigate['/'];
           return {dataState: DataState.LOADED, loginSuccess: true};
         }),
-        startWith({dataState: DataState.LOADING, isUsingMfa: false}),
+        startWith({dataState: DataState.LOADING, loginSuccess: false, usingMfa: true,
+          phone: this.phoneSubject.value.substring(this.phoneSubject.value.length - 4) }),
         catchError((error: string) => {
-          return of({dataState: DataState.ERROR, isUsingMfa: false, loginSuccess: false, error})
+          return of({dataState: DataState.ERROR, usingMfa: true, loginSuccess: false, error,
+            phone: this.phoneSubject.value.substring(this.phoneSubject.value.length - 4)})
         })
       )
   }
