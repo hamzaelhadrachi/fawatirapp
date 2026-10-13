@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {Router} from "@angular/router";
 import {UserService} from "../../service/user.service";
 import {NgForm} from "@angular/forms";
@@ -12,25 +12,28 @@ import {Key} from "../../enum/key.enum";
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
-  constructor(private router: Router, private userService: UserService) {}
+  constructor(private router: Router, private userService: UserService) {
+  }
 
   loginState$: Observable<any> = of({dataState: DataState.LOADED});
 
-  private phoneSubject = new BehaviorSubject<string | null>(null) ;
-  private emailSubject = new BehaviorSubject<string | null>(null) ;
+  private phoneSubject = new BehaviorSubject<string | null>(null);
+  private emailSubject = new BehaviorSubject<string | null>(null);
   readonly dataState = DataState;
 
 
-  login(loginForm: NgForm):void {
+  login(loginForm: NgForm): void {
     this.loginState$ = this.userService.login$(loginForm.value.email, loginForm.value.password)
       .pipe(
         map(response => {
-          if (response.data.user.usingMfa){
+          if (response.data.user.usingMfa) {
             this.phoneSubject.next(response.data.user.phone);
             this.emailSubject.next(response.data.user.email);
-            return {dataState: DataState.LOADED, loginSuccess: false, usingMfa: true,
-              phone: response.data.user.phone.substring(response.data.user.phone.length - 4) };
-          }else{
+            return {
+              dataState: DataState.LOADED, loginSuccess: false, usingMfa: true,
+              phone: response.data.user.phone.substring(response.data.user.phone.length - 4)
+            };
+          } else {
             localStorage.setItem(Key.TOKEN, response.data.access_token);
             localStorage.setItem(Key.REFRESH_TOKEN, response.data.refresh_token);
             this.router.navigate['/'];
@@ -55,16 +58,20 @@ export class LoginComponent {
           this.router.navigate['/'];
           return {dataState: DataState.LOADED, loginSuccess: true};
         }),
-        startWith({dataState: DataState.LOADING, loginSuccess: false, usingMfa: true,
-          phone: this.phoneSubject.value.substring(this.phoneSubject.value.length - 4) }),
+        startWith({
+          dataState: DataState.LOADING, loginSuccess: false, usingMfa: true,
+          phone: this.phoneSubject.value.substring(this.phoneSubject.value.length - 4)
+        }),
         catchError((error: string) => {
-          return of({dataState: DataState.ERROR, usingMfa: true, loginSuccess: false, error,
-            phone: this.phoneSubject.value.substring(this.phoneSubject.value.length - 4)})
+          return of({
+            dataState: DataState.ERROR, usingMfa: true, loginSuccess: false, error,
+            phone: this.phoneSubject.value.substring(this.phoneSubject.value.length - 4)
+          })
         })
       )
   }
 
   protected loginPage() {
-    this.loginState$=of({dataState: DataState.LOADED});
+    this.loginState$ = of({dataState: DataState.LOADED});
   }
 }
