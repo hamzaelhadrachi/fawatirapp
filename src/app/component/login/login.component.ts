@@ -36,7 +36,7 @@ export class LoginComponent {
           } else {
             localStorage.setItem(Key.TOKEN, response.data.access_token);
             localStorage.setItem(Key.REFRESH_TOKEN, response.data.refresh_token);
-            this.router.navigate['/'];
+            this.router.navigate(['/']);
             return {dataState: DataState.LOADED, loginSuccess: true};
           }
         }),
