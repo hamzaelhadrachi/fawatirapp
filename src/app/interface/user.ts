@@ -9,7 +9,7 @@ export interface User {
     title?: string;
     bio?: string;
     enabled: boolean;
-    isNotLocked: boolean;
+    notLocked: boolean;
     usingMfa: boolean;
     createdAt?: Date;
     imageUrl?: string;

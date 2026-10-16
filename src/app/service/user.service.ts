@@ -102,4 +102,13 @@ export class UserService {
           catchError(this.handleError)
         )
     );
+
+  updateAccountSettings$ = (formSettings : {enabled: boolean, isNotLocked: boolean}) => <Observable<CustomHttpResponse<Profile>>>(
+    this.http
+      .patch<CustomHttpResponse<Profile>>(`${this.server}/user/update/accountSettings`,formSettings)
+      .pipe(
+        tap(console.log),
+        catchError(this.handleError)
+      )
+  );
 }
