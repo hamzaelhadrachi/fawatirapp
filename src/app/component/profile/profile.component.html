@@ -266,16 +266,26 @@
                   </tr>
                   </thead>
                   <tbody>
-                  <tr >
-                    <td>Device</td>
-                    <td>IP Address</td>
-                    <td>Date</td>
+                  <tr *ngFor="let event of state?.appData?.data?.events">
+                    <td>{{event.device}}</td>
+                    <td>{{event.ipAdress}}</td>
+                    <td>{{event.createdAt | date: 'MMMM dd, y,hh,mm a'}}</td>
                     <td>
-                      <span class="badge pill"  >
-                         Type
-                       </span>
+                      <span class="badge pill" [ngClass]="[
+                        event.type === EventType.LOGIN_ATTEMPT_SUCCESS ? 'bg-success' : '',
+                        event.type === EventType.LOGIN_ATTEMPT ? 'bg-warning' : '',
+                        event.type === EventType.PROFILE_UPDATE ? 'bg-primary' : '',
+                        event.type === EventType.LOGIN_ATTEMPT_FAILURE ? 'bg-danger' : '',
+                        event.type === EventType.PROFILE_PICTURE_UPDATE ? 'bg-primary' : '',
+                        event.type === EventType.ROLE_UPDATE ? 'bg-info' : '',
+                        event.type === EventType.ACCOUNT_SETTINGS_UPDATE ? 'bg-warning' : '',
+                        event.type === EventType.PASSWORD_UPDATE ? 'bg-warning' : '',
+                        event.type === EventType.MFA_UPDATE ? 'bg-info' : ''
+                      ]">
+                          {{ event.type }}
+                      </span>
                     </td>
-                    <td>Description</td>
+                    <td>{{event.description}}</td>
                     <td>
                       <button type="button" class="btn btn-sm" style="background-color: #fd5d0d; font-weight: 450;">Report</button>
                     </td>
