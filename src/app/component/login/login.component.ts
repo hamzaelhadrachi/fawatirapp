@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
 import {UserService} from "../../service/user.service";
 import {NgForm} from "@angular/forms";
@@ -11,9 +11,13 @@ import {Key} from "../../enum/key.enum";
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   constructor(private router: Router, private userService: UserService) {
   }
+
+  ngOnInit(): void {
+        this.userService.isAuthenticated() ? this.router.navigate(['/']) : this.router.navigate(['/login']);
+    }
 
   loginState$: Observable<any> = of({dataState: DataState.LOADED});
 

@@ -4,12 +4,14 @@ import {catchError, Observable, tap, throwError} from 'rxjs';
 import {CustomHttpResponse, Profile} from '../interface/appstates';
 import {User} from "../interface/user";
 import {Key} from "../enum/key.enum";
+import {JwtHelperService} from "@auth0/angular-jwt";
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
   private readonly server: string = 'http://localhost:8080';
+  private readonly jwtHelper = new JwtHelperService;
 
   constructor(private http: HttpClient) {
   }
@@ -22,6 +24,7 @@ export class UserService {
         >(`${this.server}/user/login`, {email, password})
         .pipe(tap(console.log), catchError(this.handleError))
     );
+  isAuthenticated = (): boolean => (this.jwtHelper.decodeToken<string>(localStorage.getItem(Key.TOKEN)) && this.jwtHelper.isTokenExpired(localStorage.getItem(Key.TOKEN)));
 
   handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage: string;
