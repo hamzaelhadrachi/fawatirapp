@@ -1,10 +1,10 @@
-import {Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
-import {catchError, Observable, tap, throwError} from 'rxjs';
-import {CustomHttpResponse, Profile} from '../interface/appstates';
-import {User} from "../interface/user";
-import {Key} from "../enum/key.enum";
-import {JwtHelperService} from "@auth0/angular-jwt";
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { catchError, Observable, tap, throwError } from 'rxjs';
+import { CustomHttpResponse, Profile } from '../interface/appstates';
+import { User } from "../interface/user";
+import { Key } from "../enum/key.enum";
+import { JwtHelperService } from "@auth0/angular-jwt";
 
 @Injectable({
   providedIn: 'root',
@@ -21,10 +21,10 @@ export class UserService {
       this.http
         .post<
           CustomHttpResponse<Profile>
-        >(`${this.server}/user/login`, {email, password})
+        >(`${this.server}/user/login`, { email, password })
         .pipe(tap(console.log), catchError(this.handleError))
     );
-  isAuthenticated = (): boolean => (this.jwtHelper.decodeToken<string>(localStorage.getItem(Key.TOKEN)) && this.jwtHelper.isTokenExpired(localStorage.getItem(Key.TOKEN)));
+  isAuthenticated = (): boolean => (this.jwtHelper.decodeToken<string>(localStorage.getItem(Key.TOKEN)) && !this.jwtHelper.isTokenExpired(localStorage.getItem(Key.TOKEN)));
 
   handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage: string;
@@ -58,12 +58,12 @@ export class UserService {
         >(`${this.server}/user/profile`)
         .pipe(tap(console.log), catchError(this.handleError))
     );
-  update$ = (user:User) =>
+  update$ = (user: User) =>
     <Observable<CustomHttpResponse<Profile>>>(
       this.http
         .patch<
           CustomHttpResponse<Profile>
-        >(`${this.server}/user/update`,user)
+        >(`${this.server}/user/update`, user)
         .pipe(tap(console.log), catchError(this.handleError))
     );
 
@@ -72,7 +72,7 @@ export class UserService {
       this.http
         .get<
           CustomHttpResponse<Profile>
-        >(`${this.server}/user/refresh/token`,{headers:{Authorization: `Bearer ${localStorage.getItem(Key.REFRESH_TOKEN)}`}})
+        >(`${this.server}/user/refresh/token`, { headers: { Authorization: `Bearer ${localStorage.getItem(Key.REFRESH_TOKEN)}` } })
         .pipe(
           tap(response => {
             console.log(response)
@@ -85,7 +85,7 @@ export class UserService {
         )
     );
 
-  updatePassword$ = (form : {currentPassword: string, newPassword: string, confirmNewPassword:string}) =>
+  updatePassword$ = (form: { currentPassword: string, newPassword: string, confirmNewPassword: string }) =>
     <Observable<CustomHttpResponse<Profile>>>(
       this.http
         .patch<
@@ -97,18 +97,18 @@ export class UserService {
         )
     );
 
-  updateRoles$ = (roleName:string) => <Observable<CustomHttpResponse<Profile>>>(
-      this.http
-        .patch<CustomHttpResponse<Profile>>(`${this.server}/user/update/role/${roleName}`,{})
-        .pipe(
-          tap(console.log),
-          catchError(this.handleError)
-        )
-    );
-
-  updateAccountSettings$ = (formSettings : {enabled: boolean, isNotLocked: boolean}) => <Observable<CustomHttpResponse<Profile>>>(
+  updateRoles$ = (roleName: string) => <Observable<CustomHttpResponse<Profile>>>(
     this.http
-      .patch<CustomHttpResponse<Profile>>(`${this.server}/user/update/accountSettings`,formSettings)
+      .patch<CustomHttpResponse<Profile>>(`${this.server}/user/update/role/${roleName}`, {})
+      .pipe(
+        tap(console.log),
+        catchError(this.handleError)
+      )
+  );
+
+  updateAccountSettings$ = (formSettings: { enabled: boolean, isNotLocked: boolean }) => <Observable<CustomHttpResponse<Profile>>>(
+    this.http
+      .patch<CustomHttpResponse<Profile>>(`${this.server}/user/update/accountSettings`, formSettings)
       .pipe(
         tap(console.log),
         catchError(this.handleError)
@@ -117,7 +117,7 @@ export class UserService {
 
   toggleMfa$ = () => <Observable<CustomHttpResponse<Profile>>>(
     this.http
-      .patch<CustomHttpResponse<Profile>>(`${this.server}/user/togglemfa`,{})
+      .patch<CustomHttpResponse<Profile>>(`${this.server}/user/togglemfa`, {})
       .pipe(
         tap(console.log),
         catchError(this.handleError)
@@ -125,10 +125,14 @@ export class UserService {
   );
 
   updateImage$ = (formData: FormData) => <Observable<CustomHttpResponse<Profile>>>
-    this.http.patch<CustomHttpResponse<Profile>>(`${this.server}/user/update/image`,formData)
+    this.http.patch<CustomHttpResponse<Profile>>(`${this.server}/user/update/image`, formData)
       .pipe(
         tap(console.log),
         catchError(this.handleError)
       );
 
+  logOut() {
+    localStorage.removeItem(Key.TOKEN);
+    localStorage.removeItem(Key.REFRESH_TOKEN);
+  }
 }
